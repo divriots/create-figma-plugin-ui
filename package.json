@@ -1,6 +1,6 @@
 {
-  "name": "@backlight-dev/divriots.create-figma-plugin-ui",
-  "version": "0.0.0",
+  "name": "@divriots/create-figma-plugin-ui",
+  "version": "0.0.1",
   "description": "",
   "license": "MIT",
   "type": "module",

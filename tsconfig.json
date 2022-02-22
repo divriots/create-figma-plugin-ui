@@ -5,13 +5,10 @@
     "allowNonTsExtensions": true,
     "experimentalDecorators": true,
     "jsx": "react",
-    "reactNamespace": "React",
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "Fragment",
     "module": "ESNext",
     "moduleResolution": "Node",
-    "sourceMap": true,
-    "paths": {
-      "~/*": ["*"],
-      "@divriots/starter-sass/*": ["*"]
-    }
+    "sourceMap": true
   }
 }

@@ -1,6 +1,6 @@
 {
   "packages": {
-    "dir": "",
+    "dir": "src/components/",
     "menu": [
       [
         "TOKENS",

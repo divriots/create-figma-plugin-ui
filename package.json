@@ -6,8 +6,43 @@
   "type": "module",
   "homepage": "{{ homepage }}",
   "scripts": {
-    "serve": "npx backlight@latest serve hVwnH0j75lPNdN6yg8oe --open"
+    "serve": "npx backlight@latest serve hVwnH0j75lPNdN6yg8oe --open",
+    "sync": "node sync.mjs ../create-figma-plugin/packages/ui/"
   },
-  "devDependencies": {},
-  "dependencies": {}
+  "dependencies": {
+    "@create-figma-plugin/utilities": "^1.8.4"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.19",
+    "@types/rimraf": "^3.0.2",
+    "preact": "^10.6.6",
+    "rimraf": "^3.0.2"
+  },
+  "peerDependencies": {
+    "preact": "^10"
+  },
+  "eslintConfig": {
+    "extends": "eslint-config-yuanqing",
+    "ignorePatterns": [
+      "*.css.d.ts"
+    ],
+    "rules": {
+      "react/no-unknown-property": [
+        "error",
+        {
+          "ignore": [
+            "class",
+            "clip-rule",
+            "fill-rule",
+            "spellcheck"
+          ]
+        }
+      ]
+    }
+  },
+  "prettier": "eslint-config-yuanqing/prettier",
+  "sideEffects": false,
+  "stylelint": {
+    "extends": "stylelint-config-yuanqing"
+  }
 }

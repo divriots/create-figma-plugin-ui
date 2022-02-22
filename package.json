@@ -1,0 +1,13 @@
+{
+  "name": "@backlight-dev/divriots.create-figma-plugin-ui",
+  "version": "0.0.0",
+  "description": "",
+  "license": "MIT",
+  "type": "module",
+  "homepage": "{{ homepage }}",
+  "scripts": {
+    "serve": "npx backlight@latest serve hVwnH0j75lPNdN6yg8oe --open"
+  },
+  "devDependencies": {},
+  "dependencies": {}
+}

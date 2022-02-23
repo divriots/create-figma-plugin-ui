@@ -8,7 +8,7 @@
   "scripts": {
     "serve": "npx backlight@latest serve hVwnH0j75lPNdN6yg8oe --open",
     "generate-index-ts": "node ./scripts/generate-index-ts.mjs -- 'src/**/*.{ts,tsx}' '!src/**/private/**/*' && eslint --fix src/index.ts",
-    "sync": "node ./scripts/sync.mjs ../create-figma-plugin/packages/ui/"
+    "sync": "node ./scripts/sync.mjs ../create-figma-plugin/packages/ui/ && npm run generate-index-ts"
   },
   "dependencies": {
     "@create-figma-plugin/utilities": "^1.8.4"

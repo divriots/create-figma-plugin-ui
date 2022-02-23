@@ -1,3 +1,10 @@
+/**
+ * Sync script to update repo from upstream.
+ * Pass @create-figma-plugin/ui folder, this script will copy src folder, doing following patches:
+ * - rename css modules from foo.css to foo.module.css to comply with vite standard
+ * - copy .storybook/preview.js to stories.preview.jsx, adding figma theme decorator
+ */
+
 import { promises as fsp } from 'fs'
 import * as path from 'path'
 import rimraf from 'rimraf'
@@ -27,17 +34,14 @@ async function copyFiles(folder, out) {
       }
       if (/\.([jt]sx?|css)$/.test(item.name)) {
         content = content.replaceAll(
-          /(['"]\.\.?\/[\w\d._/\-]*)(\.css['"])/g,
-          (_, a, b) => (a.endsWith('/base') ? `${a}${b}` : `${a}.module${b}`)
-        )
-        content = content.replace(
-          `export { render } from './utilities/render.js'`,
-          ''
+          /(['"])\!?(\.\.?\/[\w\d._/\-]*)(\.css['"])/g,
+          (_, startQuote, basename, extAndClosingQuote) =>
+            basename.endsWith('/base')
+              ? `${startQuote}${basename}${extAndClosingQuote}`
+              : `${startQuote}${basename}.module${extAndClosingQuote}`
         )
       }
-      if (item.name !== 'render.tsx') {
-        await fsp.writeFile(itemOut, content)
-      }
+      await fsp.writeFile(itemOut, content)
     }
   }
 }

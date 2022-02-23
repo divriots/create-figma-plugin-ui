@@ -75,13 +75,20 @@ async function generateIndexTs(globPatterns, outputFilePath) {
     const normalizedFilePath = filePath
       .replace(/^(?:\.\/)?src\//, './') // Relace `./src/` with `./`
       .replace(/\.tsx?/, '')
-    const exportDeclaration = `export { ${exportNames
-      .sort()
-      .join(', ')} } from '${normalizedFilePath}'`
-    const exportTypesDeclaration = `export type { ${exportTypes
-      .sort()
-      .join(', ')} } from '${normalizedFilePath}'`
-    result.push(exportDeclaration, exportTypesDeclaration)
+    if (exportNames.length) {
+      result.push(
+        `export { ${exportNames
+          .sort()
+          .join(', ')} } from '${normalizedFilePath}'`
+      )
+    }
+    if (exportTypes.length) {
+      result.push(
+        `export type { ${exportTypes
+          .sort()
+          .join(', ')} } from '${normalizedFilePath}'`
+      )
+    }
   }
   await fs.outputFile(
     outputFilePath,

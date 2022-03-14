@@ -1,30 +1,34 @@
 /** @jsx h */
-import { h } from 'preact'
+import { h } from 'preact';
 
-import { Text } from './text'
+import { Text } from './text';
 
-export default { title: 'Components/Text' }
+export default { title: 'Components/Text' };
 
 export const Default = function () {
-  return <Text>Text</Text>
-}
+  return <Text>Text</Text>;
+};
 
 export const Bold = function () {
-  return <Text bold>Text</Text>
-}
+  return <Text bold>Text</Text>;
+};
 
 export const Muted = function () {
-  return <Text muted>Text</Text>
-}
+  return <Text muted>Text</Text>;
+};
 
 export const Numeric = function () {
-  return <Text numeric>3.142</Text>
-}
+  return <Text numeric>3.142</Text>;
+};
 
 export const Link = function () {
   return (
     <Text>
       <a href="#">Link</a>
     </Text>
-  )
-}
+  );
+};
+
+export const WithHelp = function () {
+  return <Text helplink="#">Need help</Text>;
+};

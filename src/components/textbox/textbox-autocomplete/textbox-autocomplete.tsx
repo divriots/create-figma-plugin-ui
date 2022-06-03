@@ -258,6 +258,9 @@ export function TextboxAutocomplete<Name extends string>({
 
   const handlePaste = useCallback(
     function (event: JSX.TargetedClipboardEvent<HTMLInputElement>): void {
+      if (strict === false) {
+        return
+      }
       if (event.clipboardData === null) {
         throw new Error('`event.clipboardData` is `null`')
       }
@@ -269,7 +272,7 @@ export function TextboxAutocomplete<Name extends string>({
         event.preventDefault()
       }
     },
-    [options]
+    [options, strict]
   )
 
   const handleOptionChange = useCallback(

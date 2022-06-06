@@ -105,6 +105,11 @@ export function Dropdown<
 
   const handleRootFocus = useCallback(
     function (): void {
+      if (isMenuVisible === true) {
+        // prevents re-selecting selected node when using preact/compat, which makes onFocus even bubble
+        // (hence we get here when focusing the menu inputs)
+        return;
+      }
       // Show the menu and update the `selectedId` on focus
       setIsMenuVisible(true)
       const rootElement = getCurrentFromRef(rootElementRef)
@@ -121,7 +126,7 @@ export function Dropdown<
       setSelectedId(newSelectedId)
       updateMenuElementLayout(rootElement, menuElement, newSelectedId)
     },
-    [options, value]
+    [options, value, isMenuVisible]
   )
 
   const handleRootKeyDown = useCallback(

@@ -29,14 +29,17 @@ async function copyFiles(folder, out) {
       let content = await (/\.([jt]sx?|css)$/.test(item.name)
         ? fsp.readFile(itemIn, { encoding: 'utf-8' })
         : fsp.readFile(itemIn))
-      if (item.name.endsWith('.css') && item.name !== 'base.css') {
+      if (
+        item.name.endsWith('.css') &&
+        !['base.css', 'theme.css'].includes(item.name)
+      ) {
         itemOut = path.join(out, item.name.replace('.css', '.module.css'))
       }
       if (/\.([jt]sx?|css)$/.test(item.name)) {
         content = content.replaceAll(
           /(['"])\!?(\.\.?\/[\w\d._/\-]*)(\.css['"])/g,
           (_, startQuote, basename, extAndClosingQuote) =>
-            basename.endsWith('/base')
+            basename.endsWith('/base') || basename.endsWith('/theme')
               ? `${startQuote}${basename}${extAndClosingQuote}`
               : `${startQuote}${basename}.module${extAndClosingQuote}`
         )

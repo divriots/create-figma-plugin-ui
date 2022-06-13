@@ -9,7 +9,7 @@ import styles from './button.module.css'
 
 export type ButtonProps = {
   children: ComponentChildren
-  destructive?: boolean
+  danger?: boolean
   disabled?: boolean
   fullWidth?: boolean
   loading?: boolean
@@ -20,7 +20,7 @@ export type ButtonProps = {
 
 export function Button({
   children,
-  destructive = false,
+  danger = false,
   disabled = false,
   fullWidth = false,
   loading = false,
@@ -31,16 +31,13 @@ export function Button({
 }: Props<HTMLButtonElement, ButtonProps>): JSX.Element {
   const handleKeyDown = useCallback(
     function (event: JSX.TargetedKeyboardEvent<HTMLButtonElement>): void {
-      if (event.key === 'Escape') {
-        if (propagateEscapeKeyDown === false) {
-          event.stopPropagation()
-        }
-        event.currentTarget.blur()
+      if (event.key !== 'Escape') {
         return
       }
-      if (event.key === 'Enter') {
+      if (propagateEscapeKeyDown === false) {
         event.stopPropagation()
       }
+      event.currentTarget.blur()
     },
     [propagateEscapeKeyDown]
   )
@@ -49,8 +46,8 @@ export function Button({
     <div
       class={createClassName([
         styles.button,
-        secondary === true ? styles.secondary : styles.primary,
-        destructive === true ? styles.destructive : null,
+        secondary === true ? styles.secondary : styles.default,
+        danger === true ? styles.danger : null,
         fullWidth === true ? styles.fullWidth : null,
         disabled === true ? styles.disabled : null,
         loading === true ? styles.loading : null
@@ -70,7 +67,7 @@ export function Button({
         }
         tabIndex={disabled === true ? -1 : 0}
       >
-        {children}
+        <div class={styles.children}>{children}</div>
       </button>
     </div>
   )

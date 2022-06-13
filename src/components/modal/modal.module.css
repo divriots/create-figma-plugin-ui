@@ -3,19 +3,12 @@
   z-index: var(--z-index-2);
   display: flex;
   flex-direction: column;
-  background-color: var(--color-white);
+  background-color: var(--figma-color-bg);
   transition-duration: 0.3s;
   transition-timing-function: ease;
 }
-
-.bottom {
-  top: 100%;
-  left: 0;
-  width: 100%;
-}
-.isOpen.bottom {
-  box-shadow: var(--box-shadow-modal);
-  transform: translate(0, -100%);
+.noTransition {
+  transition: none;
 }
 
 .center {
@@ -28,9 +21,19 @@
   transform: translate(-50%, -50%);
   transition-property: opacity;
 }
-.isOpen.center {
+.open.center {
   opacity: 1;
   pointer-events: all;
+}
+
+.bottom {
+  top: 100%;
+  left: 0;
+  width: 100%;
+}
+.open.bottom {
+  box-shadow: var(--box-shadow-modal);
+  transform: translate(0, -100%);
 }
 
 .left {
@@ -38,7 +41,7 @@
   right: 100%;
   height: 100%;
 }
-.isOpen.left {
+.open.left {
   box-shadow: var(--box-shadow-modal);
   transform: translate(100%, 0);
 }
@@ -48,7 +51,7 @@
   left: 100%;
   height: 100%;
 }
-.isOpen.right {
+.open.right {
   box-shadow: var(--box-shadow-modal);
   transform: translate(-100%, 0);
 }
@@ -59,33 +62,12 @@
   align-items: center;
   order: -1;
   padding: 4px;
-  border-bottom: 1px solid var(--color-silver);
+  border-color: var(--figma-color-border);
+  border-bottom-width: 1px;
 }
 
-.closeButton {
-  position: relative;
-  display: block;
-  border-radius: var(--border-radius-2);
-}
-.closeButton:hover,
-.closeButton:focus {
-  background-color: var(--color-black-6-translucent);
-}
 .closeButtonLeft {
   order: -1;
-}
-
-.closeButtonBorder {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  border: 2px solid transparent;
-  border-radius: var(--border-radius-2);
-}
-.closeButton:focus .closeButtonBorder {
-  border-color: var(--color-accent);
 }
 
 .title {
@@ -100,12 +82,15 @@
   right: 0;
   bottom: 0;
   left: 0;
-  background-color: var(--color-black-30-translucent);
+  background-color: rgba(0, 0, 0, 0.5); /* FIXME */
   opacity: 0;
   pointer-events: none;
   transition: opacity ease 0.3s;
 }
-.isOpen + .overlay {
+.open ~ .overlay {
   opacity: 1;
   pointer-events: all;
+}
+.noTransition ~ .overlay {
+  transition: none;
 }

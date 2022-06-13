@@ -5,11 +5,11 @@ import { useCallback, useRef, useState } from 'preact/hooks'
 import menuStyles from '../../css/menu.module.css'
 import { useMouseDownOutside } from '../../hooks/use-mouse-down-outside'
 import { useScrollableMenu } from '../../hooks/use-scrollable-menu'
+import { IconControlChevronDown8 } from '../../icons/icon-8/icon-control-chevron-down-8'
+import { IconMenuCheckmarkChecked16 } from '../../icons/icon-16/icon-menu-checkmark-checked-16'
 import { OnValueChange, Props } from '../../types/types'
 import { createClassName } from '../../utilities/create-class-name'
 import { getCurrentFromRef } from '../../utilities/get-current-from-ref'
-import { IconControlChevronDown8 } from '../icon/icon-8/icon-control-chevron-down-8'
-import { IconMenuCheckmarkChecked16 } from '../icon/icon-16/icon-menu-checkmark-checked-16'
 import dropdownStyles from './dropdown.module.css'
 
 const INVALID_ID = null
@@ -25,12 +25,12 @@ export type DropdownProps<
   disabled?: boolean
   icon?: ComponentChildren
   name?: Name
-  noBorder?: boolean
   onChange?: OmitThisParameter<JSX.GenericEventHandler<HTMLInputElement>>
   onValueChange?: OnValueChange<Value, Name>
   options: Array<DropdownOption<Value>>
   placeholder?: string
   value: null | Value
+  variant?: DropdownVariant
 }
 export type DropdownOption<Value extends boolean | number | string = string> =
   | DropdownOptionHeader
@@ -40,13 +40,14 @@ export type DropdownOptionHeader = {
   header: string
 }
 export type DropdownOptionValue<Value> = {
-  children?: ComponentChildren
   disabled?: boolean
+  text?: string
   value: Value
 }
 export type DropdownOptionSeparator = {
   separator: true
 }
+export type DropdownVariant = 'border' | 'underline'
 
 export function Dropdown<
   Name extends string,
@@ -55,12 +56,12 @@ export function Dropdown<
   disabled = false,
   icon,
   name,
-  noBorder,
   options,
   onChange = function () {},
   onValueChange = function () {},
   placeholder,
   value,
+  variant,
   ...rest
 }: Props<HTMLDivElement, DropdownProps<Name, Value>>): JSX.Element {
   if (typeof icon === 'string' && icon.length !== 1) {
@@ -77,7 +78,7 @@ export function Dropdown<
     throw new Error(`Invalid \`value\`: ${value}`)
   }
   const [selectedId, setSelectedId] = useState<Id>(
-    index === -1 ? null : `${index}`
+    index === -1 ? INVALID_ID : `${index}`
   )
   const children =
     typeof options[index] === 'undefined'
@@ -99,8 +100,12 @@ export function Dropdown<
     setIsMenuVisible(false)
     setSelectedId(INVALID_ID)
     getCurrentFromRef(rootElementRef).blur()
+  }, [])
+
+  const triggerUpdateMenuElementLayout = useCallback(function (selectedId: Id) {
+    const rootElement = getCurrentFromRef(rootElementRef)
     const menuElement = getCurrentFromRef(menuElementRef)
-    menuElement.removeAttribute('style') // Clear inline styles
+    updateMenuElementLayout(rootElement, menuElement, selectedId)
   }, [])
 
   const handleRootFocus = useCallback(
@@ -108,14 +113,12 @@ export function Dropdown<
       if (isMenuVisible === true) {
         // prevents re-selecting selected node when using preact/compat, which makes onFocus even bubble
         // (hence we get here when focusing the menu inputs)
-        return;
+        return
       }
       // Show the menu and update the `selectedId` on focus
       setIsMenuVisible(true)
-      const rootElement = getCurrentFromRef(rootElementRef)
-      const menuElement = getCurrentFromRef(menuElementRef)
       if (value === null) {
-        updateMenuElementLayout(rootElement, menuElement, INVALID_ID)
+        triggerUpdateMenuElementLayout(selectedId)
         return
       }
       const index = findOptionIndexByValue(options, value)
@@ -124,9 +127,9 @@ export function Dropdown<
       }
       const newSelectedId = `${index}`
       setSelectedId(newSelectedId)
-      updateMenuElementLayout(rootElement, menuElement, newSelectedId)
+      triggerUpdateMenuElementLayout(newSelectedId)
     },
-    [options, value, isMenuVisible]
+    [options, selectedId, triggerUpdateMenuElementLayout, value, isMenuVisible]
   )
 
   const handleRootKeyDown = useCallback(
@@ -214,7 +217,11 @@ export function Dropdown<
       ref={rootElementRef}
       class={createClassName([
         dropdownStyles.dropdown,
-        noBorder === true ? dropdownStyles.noBorder : null,
+        typeof variant === 'undefined'
+          ? null
+          : variant === 'border'
+          ? dropdownStyles.hasBorder
+          : null,
         typeof icon === 'undefined' ? null : dropdownStyles.hasIcon,
         disabled === true ? dropdownStyles.disabled : null
       ])}
@@ -227,7 +234,9 @@ export function Dropdown<
         <div class={dropdownStyles.icon}>{icon}</div>
       )}
       {value === null ? (
-        typeof placeholder === 'undefined' ? null : (
+        typeof placeholder === 'undefined' ? (
+          <div class={dropdownStyles.empty} />
+        ) : (
           <div
             class={createClassName([
               dropdownStyles.value,
@@ -243,11 +252,15 @@ export function Dropdown<
       <div class={dropdownStyles.chevronIcon}>
         <IconControlChevronDown8 />
       </div>
+      {variant === 'underline' ? (
+        <div class={dropdownStyles.underline} />
+      ) : null}
       <div class={dropdownStyles.border} />
       <div
         ref={menuElementRef}
         class={createClassName([
           menuStyles.menu,
+          dropdownStyles.menu,
           disabled === true || isMenuVisible === false
             ? menuStyles.hidden
             : null
@@ -303,9 +316,7 @@ export function Dropdown<
                   <IconMenuCheckmarkChecked16 />
                 </div>
               ) : null}
-              {typeof option.children === 'undefined'
-                ? option.value
-                : option.children}
+              {typeof option.text === 'undefined' ? option.value : option.text}
             </label>
           )
         })}
@@ -317,8 +328,8 @@ export function Dropdown<
 function getDropdownOptionValue<
   Value extends boolean | number | string = string
 >(option: DropdownOption<Value>): ComponentChildren {
-  if ('children' in option) {
-    return option.children
+  if ('text' in option) {
+    return option.text
   }
   if ('value' in option) {
     return option.value
@@ -348,54 +359,54 @@ function updateMenuElementLayout(
   menuElement: HTMLDivElement,
   selectedId: Id
 ) {
-  // Nudge `menuElement` left. `leftOffset` will be a negative value if the
-  // menu exceeds the window bounds.
+  // Set a maximum width and height
+  const menuElementMaxWidth = window.innerWidth - 2 * VIEWPORT_MARGIN
+  menuElement.style.maxWidth = `${menuElementMaxWidth}px`
+  const menuElementMaxHeight = window.innerHeight - 2 * VIEWPORT_MARGIN
+  menuElement.style.maxHeight = `${menuElementMaxHeight}px`
+
+  const rootElementBoundingClientRect = rootElement.getBoundingClientRect()
   const menuElementBoundingClientRect = menuElement.getBoundingClientRect()
+
+  // Nudge `menuElement` left if needed.
   const leftOffset =
-    window.innerWidth -
-    VIEWPORT_MARGIN -
-    (menuElementBoundingClientRect.left + menuElement.offsetWidth)
-  if (leftOffset < 0) {
-    const maximumLeftOffset =
-      VIEWPORT_MARGIN - menuElementBoundingClientRect.left
-    menuElement.style.left = `${Math.max(maximumLeftOffset, leftOffset)}px`
+    menuElementBoundingClientRect.left +
+    menuElement.offsetWidth -
+    (window.innerWidth - VIEWPORT_MARGIN)
+  if (leftOffset > 0) {
+    menuElement.style.left = `-${leftOffset}px`
   }
 
-  // Maximum height of `menuElement` is viewport height minus the top and bottom margin
-  const maxHeight = window.innerHeight - 2 * VIEWPORT_MARGIN
-  menuElement.style.maxHeight = `${maxHeight}px`
+  const topOffset =
+    rootElementBoundingClientRect.top +
+    menuElement.offsetHeight -
+    (window.innerHeight - VIEWPORT_MARGIN)
+  const maximumTopOffset = rootElementBoundingClientRect.top - VIEWPORT_MARGIN
 
-  // Compute `topOffset` (relative to `rootElement`) such that `menuElement`
-  // fits within viewport
-  const topOffset = Math.min(
-    0,
-    window.innerHeight -
-      VIEWPORT_MARGIN -
-      (rootElement.getBoundingClientRect().top + menuElement.offsetHeight)
-  )
-  if (selectedId === INVALID_ID || topOffset !== 0) {
-    menuElement.style.top = `${topOffset}px`
+  if (menuElement.offsetHeight < menuElementMaxHeight) {
+    if (selectedId === INVALID_ID) {
+      return
+    }
+
+    // Try to adjust the `top` position of `menuElement` such that
+    // `selectedElement` is directly above the `rootElement`
+    const selectedElement = menuElement.querySelector<HTMLInputElement>(
+      `[${ITEM_ID_DATA_ATTRIBUTE_NAME}='${selectedId}']`
+    )
+    if (selectedElement === null) {
+      throw new Error('Invariant violation') // `selectedId` is valid
+    }
+    const selectedElementTopOffset =
+      selectedElement.getBoundingClientRect().top -
+      menuElementBoundingClientRect.top
+    menuElement.style.top = `-${Math.max(
+      Math.min(selectedElementTopOffset, maximumTopOffset),
+      topOffset
+    )}px`
     return
   }
 
-  // `topOffset` is 0 (so `menuElement` comfortably fits within the
-  // viewport) and `selectedId` is valid, so try to adjust the `top`
-  // position of `menuElement` such that `selectedElement` is directly
-  // above the `rootElement`
-  const selectedElement = menuElement.querySelector<HTMLInputElement>(
-    `[${ITEM_ID_DATA_ATTRIBUTE_NAME}='${selectedId}']`
-  )
-  if (selectedElement === null) {
-    throw new Error('Invariant violation') // `index` is valid
-  }
-  const selectedElementTop =
-    selectedElement.getBoundingClientRect().top -
-    menuElementBoundingClientRect.top
-  const maximumTopOffset = Math.max(
-    0,
-    rootElement.getBoundingClientRect().top - VIEWPORT_MARGIN
-  )
-  menuElement.style.top = `${
-    -1 * Math.min(selectedElementTop, maximumTopOffset)
-  }px`
+  // Adjust the `top` position of `menuElement` such that it fits within
+  // the viewport height.
+  menuElement.style.top = `-${Math.min(topOffset, maximumTopOffset)}px`
 }

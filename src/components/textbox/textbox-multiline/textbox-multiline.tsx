@@ -14,22 +14,23 @@ const EMPTY_STRING = ''
 export type TextboxMultilineProps<Name extends string> = {
   disabled?: boolean
   name?: Name
-  noBorder?: boolean
   onInput?: OmitThisParameter<JSX.GenericEventHandler<HTMLTextAreaElement>>
   onValueInput?: OnValueChange<string, Name>
   placeholder?: string
   propagateEscapeKeyDown?: boolean
   revertOnEscapeKeyDown?: boolean
-  spellCheck?: boolean
   rows?: number
+  spellCheck?: boolean
   validateOnBlur?: (value: string) => string | boolean
   value: string
+  variant?: TextboxMultilineVariant
 }
+
+export type TextboxMultilineVariant = 'border' | 'underline'
 
 export function TextboxMultiline<Name extends string>({
   disabled = false,
   name,
-  noBorder = false,
   onInput = function () {},
   onValueInput = function () {},
   placeholder,
@@ -38,11 +39,12 @@ export function TextboxMultiline<Name extends string>({
   rows = 3,
   spellCheck = false,
   validateOnBlur,
+  variant,
   value,
   ...rest
 }: Props<HTMLTextAreaElement, TextboxMultilineProps<Name>>): JSX.Element {
   const textAreaElementRef: RefObject<HTMLTextAreaElement> = useRef(null)
-  const isRevertOnEscapeKeyDownRef: RefObject<boolean> = useRef(false) // Boolean flag to exit early from `handleBlur`
+  const revertOnEscapeKeyDownRef: RefObject<boolean> = useRef(false) // Boolean flag to exit early from `handleBlur`
 
   const [originalValue, setOriginalValue] = useState(EMPTY_STRING) // Value of the textbox when it was initially focused
 
@@ -56,8 +58,8 @@ export function TextboxMultiline<Name extends string>({
 
   const handleBlur = useCallback(
     function (): void {
-      if (isRevertOnEscapeKeyDownRef.current === true) {
-        isRevertOnEscapeKeyDownRef.current = false
+      if (revertOnEscapeKeyDownRef.current === true) {
+        revertOnEscapeKeyDownRef.current = false
         return
       }
       if (typeof validateOnBlur !== 'undefined') {
@@ -105,7 +107,7 @@ export function TextboxMultiline<Name extends string>({
           event.stopPropagation()
         }
         if (revertOnEscapeKeyDown === true) {
-          isRevertOnEscapeKeyDownRef.current = true
+          revertOnEscapeKeyDownRef.current = true
           setTextAreaElementValue(originalValue)
           setOriginalValue(EMPTY_STRING)
         }
@@ -144,7 +146,11 @@ export function TextboxMultiline<Name extends string>({
     <div
       class={createClassName([
         styles.textboxMultiline,
-        noBorder === true ? styles.noBorder : null,
+        typeof variant === 'undefined'
+          ? null
+          : variant === 'border'
+          ? styles.hasBorder
+          : null,
         disabled === true ? styles.disabled : null
       ])}
     >
@@ -166,6 +172,7 @@ export function TextboxMultiline<Name extends string>({
         value={value === MIXED_STRING ? 'Mixed' : value}
       />
       <div class={styles.border} />
+      {variant === 'underline' ? <div class={styles.underline} /> : null}
     </div>
   )
 }

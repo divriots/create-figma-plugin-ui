@@ -1,24 +1,21 @@
 /** @jsx h */
-import { ComponentChildren, h, JSX } from 'preact'
+import { ComponentChildren, h, JSX } from 'preact';
 
-import { IconCircleHelp16 } from '../../icons/icon-16/icon-circle-help-16'
-import { Props } from '../../types/types'
-import { createClassName } from '../../utilities/create-class-name'
-import styles from './text.module.css'
+import { Props } from '../../types/types';
+import { createClassName } from '../../utilities/create-class-name';
+import styles from './text.module.css';
 
 export type TextProps = {
-  align?: TextAlignment
-  children: ComponentChildren
-  numeric?: boolean
-  helplink?: string
-}
-export type TextAlignment = 'left' | 'center' | 'right'
+  align?: TextAlignment;
+  children: ComponentChildren;
+  numeric?: boolean;
+};
+export type TextAlignment = 'left' | 'center' | 'right';
 
 export function Text({
   align = 'left',
   children,
   numeric = false,
-  helplink = undefined,
   ...rest
 }: Props<HTMLDivElement, TextProps>): JSX.Element {
   return (
@@ -27,15 +24,10 @@ export function Text({
       class={createClassName([
         styles.text,
         styles[align],
-        numeric === true ? styles.numeric : null
+        numeric === true ? styles.numeric : null,
       ])}
     >
       {children}
-      {helplink && (
-        <a href={helplink} rel="noreferrer" target="_blank">
-          <IconCircleHelp16 />
-        </a>
-      )}
     </div>
-  )
+  );
 }

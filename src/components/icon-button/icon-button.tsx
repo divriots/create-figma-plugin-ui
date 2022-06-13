@@ -2,40 +2,25 @@
 import { ComponentChildren, h, JSX } from 'preact'
 import { useCallback } from 'preact/hooks'
 
-import { OnValueChange, Props } from '../../types/types'
-import { createClassName } from '../../utilities/create-class-name'
+import { Props } from '../../types/types'
 import styles from './icon-button.module.css'
 
-export type IconButtonProps<Name extends string> = {
+export type IconButtonProps = {
   children: ComponentChildren
   disabled?: boolean
-  name?: Name
-  onChange?: OmitThisParameter<JSX.GenericEventHandler<HTMLInputElement>>
-  onValueChange?: OnValueChange<boolean, Name>
+  onClick?: JSX.MouseEventHandler<HTMLButtonElement>
   propagateEscapeKeyDown?: boolean
-  value: boolean
 }
 
-export function IconButton<Name extends string>({
+export function IconButton({
   children,
   disabled = false,
-  name,
-  onChange = function () {},
-  onValueChange = function () {},
+  onClick,
   propagateEscapeKeyDown = true,
-  value,
   ...rest
-}: Props<HTMLInputElement, IconButtonProps<Name>>): JSX.Element {
-  const handleChange = useCallback(
-    function (event: JSX.TargetedEvent<HTMLInputElement>): void {
-      onValueChange(!value, name)
-      onChange(event)
-    },
-    [name, onChange, onValueChange, value]
-  )
-
+}: Props<HTMLButtonElement, IconButtonProps>): JSX.Element {
   const handleKeyDown = useCallback(
-    function (event: JSX.TargetedKeyboardEvent<HTMLInputElement>): void {
+    function (event: JSX.TargetedKeyboardEvent<HTMLButtonElement>): void {
       if (event.key !== 'Escape') {
         return
       }
@@ -48,26 +33,15 @@ export function IconButton<Name extends string>({
   )
 
   return (
-    <label
-      class={createClassName([
-        styles.iconButton,
-        disabled === true ? styles.disabled : null
-      ])}
+    <button
+      {...rest}
+      class={styles.iconButton}
+      disabled={disabled === true}
+      onClick={disabled === true ? undefined : onClick}
+      onKeyDown={disabled === true ? undefined : handleKeyDown}
+      tabIndex={disabled === true ? -1 : 0}
     >
-      <input
-        {...rest}
-        checked={value === true}
-        class={styles.input}
-        disabled={disabled === true}
-        name={name}
-        onChange={handleChange}
-        onKeyDown={disabled === true ? undefined : handleKeyDown}
-        tabIndex={disabled === true ? -1 : 0}
-        type="checkbox"
-      />
-      <div class={styles.fill}>
-        <div class={styles.icon}>{children}</div>
-      </div>
-    </label>
+      <div class={styles.icon}>{children}</div>
+    </button>
   )
 }

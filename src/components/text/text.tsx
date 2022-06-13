@@ -6,19 +6,15 @@ import { createClassName } from '../../utilities/create-class-name'
 import styles from './text.module.css'
 
 export type TextProps = {
-  children: ComponentChildren
   align?: TextAlignment
-  bold?: boolean
-  muted?: boolean
+  children: ComponentChildren
   numeric?: boolean
 }
 export type TextAlignment = 'left' | 'center' | 'right'
 
 export function Text({
   align = 'left',
-  bold = false,
   children,
-  muted = false,
   numeric = false,
   ...rest
 }: Props<HTMLDivElement, TextProps>): JSX.Element {
@@ -28,8 +24,6 @@ export function Text({
       class={createClassName([
         styles.text,
         styles[align],
-        bold === true ? styles.bold : null,
-        muted === true ? styles.muted : null,
         numeric === true ? styles.numeric : null
       ])}
     >

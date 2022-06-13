@@ -20,23 +20,24 @@ export type TextboxColorProps<
   OpacityName extends string
 > = {
   disabled?: boolean
-  name?: Name
-  noBorder?: boolean
-  propagateEscapeKeyDown?: boolean
-  revertOnEscapeKeyDown?: boolean
   hexColor: string
   hexColorName?: HexColorName
   hexColorPlaceholder?: string
+  name?: Name
   onHexColorInput?: OmitThisParameter<JSX.GenericEventHandler<HTMLInputElement>>
   onHexColorValueInput?: OnValueChange<string, HexColorName>
-  opacity: string
-  opacityName?: OpacityName
-  opacityPlaceholder?: string
   onOpacityInput?: OmitThisParameter<JSX.GenericEventHandler<HTMLInputElement>>
   onOpacityNumericValueInput?: OnValueChange<null | number, OpacityName>
   onOpacityValueInput?: OnValueChange<string, OpacityName>
   onRgbaColorValueInput?: OnValueChange<null | RGBA, Name>
+  opacity: string
+  opacityName?: OpacityName
+  opacityPlaceholder?: string
+  propagateEscapeKeyDown?: boolean
+  revertOnEscapeKeyDown?: boolean
+  variant?: TextboxColorVariant
 }
+export type TextboxColorVariant = 'border' | 'underline'
 
 export function TextboxColor<
   Name extends string,
@@ -44,29 +45,29 @@ export function TextboxColor<
   OpacityName extends string
 >({
   disabled = false,
-  name,
-  noBorder = false,
-  propagateEscapeKeyDown = true,
-  revertOnEscapeKeyDown = false,
   hexColor,
   hexColorName,
   hexColorPlaceholder,
+  name,
   onHexColorInput = function () {},
   onHexColorValueInput = function () {},
-  opacity,
-  opacityName,
-  opacityPlaceholder,
   onOpacityInput = function () {},
   onOpacityNumericValueInput = function () {},
   onOpacityValueInput = function () {},
   onRgbaColorValueInput = function () {},
+  opacity,
+  opacityName,
+  opacityPlaceholder,
+  propagateEscapeKeyDown = true,
+  revertOnEscapeKeyDown = false,
+  variant,
   ...rest
 }: Props<
   HTMLInputElement,
   TextboxColorProps<Name, HexColorName, OpacityName>
 >): JSX.Element {
   const hexColorInputElementRef: RefObject<HTMLInputElement> = useRef(null)
-  const isRevertOnEscapeKeyDownRef: RefObject<boolean> = useRef(false) // Boolean flag to exit early from `handleBlur`
+  const revertOnEscapeKeyDownRef: RefObject<boolean> = useRef(false) // Boolean flag to exit early from `handleBlur`
 
   const [originalHexColor, setOriginalHexColor] = useState(EMPTY_STRING) // Value of the hex color textbox when it was initially focused
 
@@ -121,8 +122,8 @@ export function TextboxColor<
 
   const handleHexColorBlur = useCallback(
     function (): void {
-      if (isRevertOnEscapeKeyDownRef.current === true) {
-        isRevertOnEscapeKeyDownRef.current = false
+      if (revertOnEscapeKeyDownRef.current === true) {
+        revertOnEscapeKeyDownRef.current = false
         return
       }
       if (hexColor === EMPTY_STRING) {
@@ -188,7 +189,7 @@ export function TextboxColor<
           event.stopPropagation()
         }
         if (revertOnEscapeKeyDown === true) {
-          isRevertOnEscapeKeyDownRef.current = true
+          revertOnEscapeKeyDownRef.current = true
           setHexColorInputElementValue(originalHexColor)
           setOriginalHexColor(EMPTY_STRING)
         }
@@ -265,10 +266,9 @@ export function TextboxColor<
 
   const parsedOpacity = parseOpacity(opacity)
 
+  const isHexColorValid = hexColor !== EMPTY_STRING && hexColor !== MIXED_STRING
   const normalizedHexColor =
-    hexColor === EMPTY_STRING || hexColor === MIXED_STRING
-      ? 'FFFFFF'
-      : normalizeUserInputColor(hexColor)
+    isHexColorValid === true ? normalizeUserInputColor(hexColor) : 'FFFFFF'
   const renderedHexColor =
     normalizedHexColor === null ? originalHexColor : normalizedHexColor
 
@@ -279,22 +279,34 @@ export function TextboxColor<
     <div
       class={createClassName([
         styles.textboxColor,
-        noBorder === true ? styles.noBorder : null,
+        typeof variant === 'undefined'
+          ? null
+          : variant === 'border'
+          ? styles.hasBorder
+          : null,
         disabled === true ? styles.disabled : null
       ])}
     >
       <div class={styles.color}>
         <div
           class={styles.colorFill}
-          style={{ backgroundColor: `#${renderedHexColor}` }}
+          style={
+            isHexColorValid === true
+              ? { backgroundColor: `#${renderedHexColor}` }
+              : {}
+          }
         ></div>
         {parsedOpacity === 1 ? null : (
           <div
             class={styles.colorFill}
-            style={{
-              backgroundColor: `#${renderedHexColor}`,
-              opacity: parsedOpacity
-            }}
+            style={
+              isHexColorValid === true
+                ? {
+                    backgroundColor: `#${renderedHexColor}`,
+                    opacity: parsedOpacity
+                  }
+                : {}
+            }
           ></div>
         )}
         <div class={styles.colorBorder} />
@@ -344,6 +356,7 @@ export function TextboxColor<
       />
       <div class={styles.divider} />
       <div class={styles.border} />
+      {variant === 'underline' ? <div class={styles.underline} /> : null}
     </div>
   )
 }

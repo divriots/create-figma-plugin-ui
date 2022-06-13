@@ -9,26 +9,27 @@ import styles from './layer.module.css'
 export type LayerProps<Name extends string> = {
   bold?: boolean
   children: ComponentChildren
+  component?: boolean
+  description?: string
+  icon: ComponentChildren
   name?: Name
   onChange?: OmitThisParameter<JSX.GenericEventHandler<HTMLInputElement>>
   onValueChange?: OnValueChange<boolean, Name>
-  pageName?: string
-  icon?: ComponentChildren
-  color?: LayerColor
-  value?: boolean
+  propagateEscapeKeyDown?: boolean
+  value: boolean
 }
-export type LayerColor = 'black-30' | 'black-80' | 'purple'
 
 export function Layer<Name extends string>({
   bold = false,
   children,
-  color = 'black-80',
+  description,
+  component = false,
+  icon,
   name,
   onChange = function () {},
   onValueChange = function () {},
-  pageName,
-  value = false,
-  icon,
+  propagateEscapeKeyDown = true,
+  value,
   ...rest
 }: Props<HTMLInputElement, LayerProps<Name>>): JSX.Element {
   const handleChange = useCallback(
@@ -40,31 +41,42 @@ export function Layer<Name extends string>({
     [name, onChange, onValueChange]
   )
 
+  const handleKeyDown = useCallback(
+    function (event: JSX.TargetedKeyboardEvent<HTMLInputElement>): void {
+      if (event.key !== 'Escape') {
+        return
+      }
+      if (propagateEscapeKeyDown === false) {
+        event.stopPropagation()
+      }
+      event.currentTarget.blur()
+    },
+    [propagateEscapeKeyDown]
+  )
+
   return (
-    <label class={createClassName([styles.layer, styles[color]])}>
+    <label
+      class={createClassName([
+        styles.layer,
+        bold === true ? styles.bold : null,
+        component === true ? styles.component : null
+      ])}
+    >
       <input
         {...rest}
         checked={value === true}
         class={styles.input}
         name={name}
         onChange={handleChange}
+        onKeyDown={handleKeyDown}
         tabIndex={0}
         type="checkbox"
       />
-      <div class={styles.fill} />
-      {typeof icon === 'undefined' ? null : (
-        <div class={styles.icon}>{icon}</div>
-      )}
-      <div
-        class={createClassName([
-          styles.layerName,
-          bold === true ? styles.bold : null
-        ])}
-      >
-        {children}
-      </div>
-      {typeof pageName === 'undefined' ? null : (
-        <div class={styles.pageName}>{pageName}</div>
+      <div class={styles.box} />
+      <div class={styles.icon}>{icon}</div>
+      <div class={styles.children}>{children}</div>
+      {typeof description === 'undefined' ? null : (
+        <div class={styles.description}>{description}</div>
       )}
     </label>
   )

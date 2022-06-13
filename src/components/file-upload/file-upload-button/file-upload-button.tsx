@@ -4,9 +4,10 @@ import { useCallback } from 'preact/hooks'
 
 import { Props } from '../../../types/types'
 import { createClassName } from '../../../utilities/create-class-name'
+import buttonStyles from '../../button/button.module.css'
 import { LoadingIndicator } from '../../loading-indicator/loading-indicator'
 import { fileComparator } from '../private/file-comparator'
-import styles from './file-upload-button.module.css'
+import fileUploadButtonStyles from './file-upload-button.module.css'
 
 export type FileUploadButtonProps = {
   acceptedFileTypes?: Array<string>
@@ -15,9 +16,9 @@ export type FileUploadButtonProps = {
   fullWidth?: boolean
   loading?: boolean
   multiple?: boolean
-  secondary?: boolean
   onSelectedFiles?: (files: Array<File>) => void
   propagateEscapeKeyDown?: boolean
+  secondary?: boolean
 }
 
 export function FileUploadButton({
@@ -28,8 +29,8 @@ export function FileUploadButton({
   loading = false,
   multiple = false,
   onSelectedFiles,
-  secondary = false,
   propagateEscapeKeyDown = true,
+  secondary = false,
   ...rest
 }: Props<HTMLInputElement, FileUploadButtonProps>): JSX.Element {
   const handleChange = useCallback(
@@ -82,15 +83,19 @@ export function FileUploadButton({
   return (
     <div
       class={createClassName([
-        styles.fileUploadButton,
-        secondary === true ? styles.secondary : styles.primary,
-        fullWidth === true ? styles.fullWidth : null,
-        disabled === true ? styles.disabled : null,
-        loading === true ? styles.loading : null
+        buttonStyles.button,
+        secondary === true ? buttonStyles.secondary : buttonStyles.default,
+        secondary === true
+          ? fileUploadButtonStyles.secondary
+          : fileUploadButtonStyles.default,
+        fullWidth === true ? buttonStyles.fullWidth : null,
+        disabled === true ? buttonStyles.disabled : null,
+        disabled === true ? fileUploadButtonStyles.disabled : null,
+        loading === true ? buttonStyles.loading : null
       ])}
     >
       {loading === true ? (
-        <div class={styles.loadingIndicator}>
+        <div class={buttonStyles.loadingIndicator}>
           <LoadingIndicator />
         </div>
       ) : null}
@@ -101,7 +106,7 @@ export function FileUploadButton({
             ? undefined
             : acceptedFileTypes.join(',')
         }
-        class={styles.input}
+        class={fileUploadButtonStyles.input}
         disabled={disabled === true}
         multiple={multiple}
         onChange={
@@ -117,7 +122,7 @@ export function FileUploadButton({
         type="file"
       />
       <button disabled={disabled === true} tabIndex={-1}>
-        {children}
+        <div class={buttonStyles.children}>{children}</div>
       </button>
     </div>
   )

@@ -2,9 +2,9 @@
 import { ComponentChildren, h, JSX } from 'preact'
 import { useCallback } from 'preact/hooks'
 
+import { IconMenuCheckmarkChecked16 } from '../../icons/icon-16/icon-menu-checkmark-checked-16'
 import { OnValueChange, Props } from '../../types/types'
 import { createClassName } from '../../utilities/create-class-name'
-import { IconMenuCheckmarkChecked16 } from '../icon/icon-16/icon-menu-checkmark-checked-16'
 import styles from './selectable-item.module.css'
 
 export type SelectableItemProps<Name extends string> = {
@@ -28,7 +28,7 @@ export function SelectableItem<Name extends string>({
   onChange = function () {},
   onValueChange = function () {},
   propagateEscapeKeyDown = true,
-  value = false,
+  value,
   ...rest
 }: Props<HTMLInputElement, SelectableItemProps<Name>>): JSX.Element {
   const handleChange = useCallback(
@@ -58,8 +58,7 @@ export function SelectableItem<Name extends string>({
         styles.selectableItem,
         disabled === true ? styles.disabled : null,
         bold === true ? styles.bold : null,
-        indent === true ? styles.indent : null,
-        value === true ? styles.checked : null
+        indent === true ? styles.indent : null
       ])}
     >
       <input
@@ -73,9 +72,10 @@ export function SelectableItem<Name extends string>({
         tabIndex={disabled === true ? -1 : 0}
         type="checkbox"
       />
+      <div class={styles.box} />
       <div class={styles.children}>{children}</div>
       {value === true ? (
-        <div class={styles.checkIcon}>
+        <div class={styles.icon}>
           <IconMenuCheckmarkChecked16 />
         </div>
       ) : null}

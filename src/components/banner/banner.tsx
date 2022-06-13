@@ -8,20 +8,26 @@ import styles from './banner.module.css'
 export type BannerProps = {
   children: ComponentChildren
   icon: ComponentChildren
-  type?: BannerType
+  variant?: BannerVariant
 }
-export type BannerType = 'informative' | 'upsell' | 'warning'
+export type BannerVariant = 'success' | 'warning'
 
 export function Banner({
   children,
   icon,
-  type = 'informative',
+  variant,
   ...rest
 }: Props<HTMLDivElement, BannerProps>): JSX.Element {
   return (
-    <div {...rest} class={createClassName([styles.banner, styles[type]])}>
+    <div
+      {...rest}
+      class={createClassName([
+        styles.banner,
+        typeof variant === 'undefined' ? null : styles[variant]
+      ])}
+    >
       <div class={styles.icon}>{icon}</div>
-      <div>{children}</div>
+      <div class={styles.children}>{children}</div>
     </div>
   )
 }

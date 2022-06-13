@@ -4,10 +4,10 @@ import { useCallback, useRef, useState } from 'preact/hooks'
 
 import menuStyles from '../../../css/menu.module.css'
 import { useMouseDownOutside } from '../../../hooks/use-mouse-down-outside'
+import { IconMenuCheckmarkChecked16 } from '../../../icons/icon-16/icon-menu-checkmark-checked-16'
 import { OnValueChange, Props } from '../../../types/types'
 import { createClassName } from '../../../utilities/create-class-name'
 import { getCurrentFromRef } from '../../../utilities/get-current-from-ref'
-import { IconMenuCheckmarkChecked16 } from '../../icon/icon-16/icon-menu-checkmark-checked-16'
 import { computeNextValue } from '../private/compute-next-value'
 import { isKeyCodeCharacterGenerating } from '../private/is-keycode-character-generating'
 import textboxStyles from '../textbox/textbox.module.css'
@@ -23,7 +23,6 @@ export type TextboxAutocompleteProps<Name extends string> = {
   filter?: boolean
   icon?: ComponentChildren
   name?: Name
-  noBorder?: boolean
   onInput?: OmitThisParameter<JSX.GenericEventHandler<HTMLInputElement>>
   onValueInput?: OnValueChange<string, Name>
   options: Array<TextboxAutocompleteOption>
@@ -34,6 +33,7 @@ export type TextboxAutocompleteProps<Name extends string> = {
   strict?: boolean
   top?: boolean
   value: string
+  variant?: TextboxAutocompleteVariant
 }
 export type TextboxAutocompleteOption =
   | TextboxAutocompleteOptionHeader
@@ -49,6 +49,7 @@ export type TextboxAutocompleteOptionValue = {
 export type TextboxAutocompleteOptionSeparator = {
   separator: true
 }
+export type TextboxAutocompleteVariant = 'border' | 'underline'
 
 type Option =
   | TextboxAutocompleteOptionHeader
@@ -64,7 +65,6 @@ export function TextboxAutocomplete<Name extends string>({
   filter = false,
   icon,
   name,
-  noBorder = false,
   onInput = function () {},
   onValueInput = function () {},
   placeholder,
@@ -74,6 +74,7 @@ export function TextboxAutocomplete<Name extends string>({
   strict = false,
   top = false,
   value,
+  variant,
   ...rest
 }: Props<HTMLInputElement, TextboxAutocompleteProps<Name>>): JSX.Element {
   if (typeof icon === 'string' && icon.length !== 1) {
@@ -258,6 +259,9 @@ export function TextboxAutocomplete<Name extends string>({
 
   const handlePaste = useCallback(
     function (event: JSX.TargetedClipboardEvent<HTMLInputElement>): void {
+      if (strict === false) {
+        return
+      }
       if (event.clipboardData === null) {
         throw new Error('`event.clipboardData` is `null`')
       }
@@ -269,7 +273,7 @@ export function TextboxAutocomplete<Name extends string>({
         event.preventDefault()
       }
     },
-    [options]
+    [options, strict]
   )
 
   const handleOptionChange = useCallback(
@@ -324,7 +328,11 @@ export function TextboxAutocomplete<Name extends string>({
       ref={rootElementRef}
       class={createClassName([
         textboxStyles.textbox,
-        noBorder === true ? textboxStyles.noBorder : null,
+        typeof variant === 'undefined'
+          ? null
+          : variant === 'border'
+          ? textboxStyles.hasBorder
+          : null,
         typeof icon === 'undefined' ? null : textboxStyles.hasIcon,
         disabled === true ? textboxStyles.disabled : null
       ])}
@@ -349,6 +357,9 @@ export function TextboxAutocomplete<Name extends string>({
           <div class={textboxStyles.icon}>{icon}</div>
         )}
         <div class={textboxStyles.border} />
+        {variant === 'underline' ? (
+          <div class={textboxStyles.underline} />
+        ) : null}
         <div
           ref={menuElementRef}
           class={createClassName([

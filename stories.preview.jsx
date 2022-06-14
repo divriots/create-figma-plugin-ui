@@ -1,11 +1,15 @@
 /** @jsx h */
-import './src/css/theme.css'
+// import './src/css/theme.css'
 import './src/css/base.css'
 
 import { h } from 'preact'
 
 export const decorators = [
-  (Story) => (<div className='theme-figma'><Story /></div>),
+  (Story) => (
+    <div className="figma-light">
+      <Story />
+    </div>
+  ),
   function (Story, storyContext) {
     if (storyContext.parameters.fixedWidth === true) {
       const style = { width: '240px' }

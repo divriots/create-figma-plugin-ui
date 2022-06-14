@@ -54,6 +54,6 @@ let previewJs = await fsp.readFile(path.join(input, '.storybook/preview.js'), {
 previewJs = previewJs.replaceAll('../src', './src')
 previewJs = previewJs.replace(
   'decorators = [',
-  `decorators = [\n  (Story) => (<div className='theme-figma'><Story /></div>),`
+  `decorators = [\n  (Story) => (<div className='figma-light'><Story /></div>),`
 )
 await fsp.writeFile(path.join(output, 'stories.preview.jsx'), previewJs)

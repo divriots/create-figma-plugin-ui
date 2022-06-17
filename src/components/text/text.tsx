@@ -1,16 +1,16 @@
 /** @jsx h */
-import { ComponentChildren, h, JSX } from 'preact';
+import { ComponentChildren, h, JSX } from 'preact'
 
-import { Props } from '../../types/types';
-import { createClassName } from '../../utilities/create-class-name';
-import styles from './text.module.css';
+import { Props } from '../../types/types'
+import { createClassName } from '../../utilities/create-class-name'
+import styles from './text.module.css'
 
 export type TextProps = {
-  align?: TextAlignment;
-  children: ComponentChildren;
-  numeric?: boolean;
-};
-export type TextAlignment = 'left' | 'center' | 'right';
+  align?: TextAlignment
+  children: ComponentChildren
+  numeric?: boolean
+}
+export type TextAlignment = 'left' | 'center' | 'right'
 
 export function Text({
   align = 'left',
@@ -24,10 +24,10 @@ export function Text({
       class={createClassName([
         styles.text,
         styles[align],
-        numeric === true ? styles.numeric : null,
+        numeric === true ? styles.numeric : null
       ])}
     >
       {children}
     </div>
-  );
+  )
 }

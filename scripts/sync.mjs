@@ -6,18 +6,23 @@
  */
 
 import { promises as fsp } from 'fs'
+import { ensureDir } from 'fs-extra'
 import * as path from 'path'
 import rimraf from 'rimraf'
 import { promisify } from 'util'
+
+if (!process.argv[2]) throw new Error('Input required')
 
 const rmrf = promisify(rimraf)
 const input = path.resolve(process.argv[2])
 const output = process.cwd()
 
-await copyFiles(path.join(input, 'src'), path.join(output, 'src'))
+
+const outSrc = path.join(output, 'src')
+await rmrf(path.join(outSrc, '**/!(_*).@([jt]s?(x)|css)'))
+await copyFiles(path.join(input, 'src'), outSrc)
 async function copyFiles(folder, out) {
-  await rmrf(out)
-  await fsp.mkdir(out)
+  await ensureDir(out)
   /** @type {import('fs').Dirent[]} */
   const items = await fsp.readdir(folder, { withFileTypes: true })
   for (const item of items) {

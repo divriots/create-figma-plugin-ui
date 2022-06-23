@@ -1,53 +1,53 @@
 /** @jsx h */
-import { ComponentChildren, h, JSX, RefObject } from 'preact'
-import { useCallback, useRef, useState } from 'preact/hooks'
+import { ComponentChildren, h, JSX, RefObject } from 'preact';
+import { useCallback, useRef, useState } from 'preact/hooks';
 
-import menuStyles from '../../css/menu.module.css'
-import { useMouseDownOutside } from '../../hooks/use-mouse-down-outside'
-import { useScrollableMenu } from '../../hooks/use-scrollable-menu'
-import { IconControlChevronDown8 } from '../../icons/icon-8/icon-control-chevron-down-8'
-import { IconMenuCheckmarkChecked16 } from '../../icons/icon-16/icon-menu-checkmark-checked-16'
-import { OnValueChange, Props } from '../../types/types'
-import { createClassName } from '../../utilities/create-class-name'
-import { getCurrentFromRef } from '../../utilities/get-current-from-ref'
-import dropdownStyles from './dropdown.module.css'
+import menuStyles from '../../css/menu.module.css';
+import { useMouseDownOutside } from '../../hooks/use-mouse-down-outside';
+import { useScrollableMenu } from '../../hooks/use-scrollable-menu';
+import { IconControlChevronDown8 } from '../../icons/icon-8/icon-control-chevron-down-8';
+import { IconMenuCheckmarkChecked16 } from '../../icons/icon-16/icon-menu-checkmark-checked-16';
+import { OnValueChange, Props } from '../../types/types';
+import { createClassName } from '../../utilities/create-class-name';
+import { getCurrentFromRef } from '../../utilities/get-current-from-ref';
+import dropdownStyles from './dropdown.module.css';
 
-const INVALID_ID = null
-const ITEM_ID_DATA_ATTRIBUTE_NAME = 'data-dropdown-item-id'
-const VIEWPORT_MARGIN = 16
+const INVALID_ID = null;
+const ITEM_ID_DATA_ATTRIBUTE_NAME = 'data-dropdown-item-id';
+const VIEWPORT_MARGIN = 16;
 
-type Id = typeof INVALID_ID | string
+type Id = typeof INVALID_ID | string;
 
 export type DropdownProps<
   Name extends string,
   Value extends boolean | number | string = string
 > = {
-  disabled?: boolean
-  icon?: ComponentChildren
-  name?: Name
-  onChange?: OmitThisParameter<JSX.GenericEventHandler<HTMLInputElement>>
-  onValueChange?: OnValueChange<Value, Name>
-  options: Array<DropdownOption<Value>>
-  placeholder?: string
-  value: null | Value
-  variant?: DropdownVariant
-}
+  disabled?: boolean;
+  icon?: ComponentChildren;
+  name?: Name;
+  onChange?: OmitThisParameter<JSX.GenericEventHandler<HTMLInputElement>>;
+  onValueChange?: OnValueChange<Value, Name>;
+  options: Array<DropdownOption<Value>>;
+  placeholder?: string;
+  value: null | Value;
+  variant?: DropdownVariant;
+};
 export type DropdownOption<Value extends boolean | number | string = string> =
   | DropdownOptionHeader
   | DropdownOptionValue<Value>
-  | DropdownOptionSeparator
+  | DropdownOptionSeparator;
 export type DropdownOptionHeader = {
-  header: string
-}
+  header: string;
+};
 export type DropdownOptionValue<Value> = {
-  disabled?: boolean
-  text?: string
-  value: Value
-}
+  disabled?: boolean;
+  text?: string;
+  value: Value;
+};
 export type DropdownOptionSeparator = {
-  separator: true
-}
-export type DropdownVariant = 'border' | 'underline'
+  separator: true;
+};
+export type DropdownVariant = 'border' | 'underline';
 
 export function Dropdown<
   Name extends string,
@@ -65,25 +65,25 @@ export function Dropdown<
   ...rest
 }: Props<HTMLDivElement, DropdownProps<Name, Value>>): JSX.Element {
   if (typeof icon === 'string' && icon.length !== 1) {
-    throw new Error(`String \`icon\` must be a single character: ${icon}`)
+    throw new Error(`String \`icon\` must be a single character: ${icon}`);
   }
 
-  const rootElementRef: RefObject<HTMLDivElement> = useRef(null)
-  const menuElementRef: RefObject<HTMLDivElement> = useRef(null)
+  const rootElementRef: RefObject<HTMLDivElement> = useRef(null);
+  const menuElementRef: RefObject<HTMLDivElement> = useRef(null);
 
-  const [isMenuVisible, setIsMenuVisible] = useState(false)
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
 
-  const index = findOptionIndexByValue(options, value)
+  const index = findOptionIndexByValue(options, value);
   if (value !== null && index === -1) {
-    throw new Error(`Invalid \`value\`: ${value}`)
+    throw new Error(`Invalid \`value\`: ${value}`);
   }
   const [selectedId, setSelectedId] = useState<Id>(
     index === -1 ? INVALID_ID : `${index}`
-  )
+  );
   const children =
     typeof options[index] === 'undefined'
       ? ''
-      : getDropdownOptionValue(options[index])
+      : getDropdownOptionValue(options[index]);
 
   // Uncomment to debug
   // console.table([{ isMenuVisible, selectedId }])
@@ -93,50 +93,50 @@ export function Dropdown<
       itemIdDataAttributeName: ITEM_ID_DATA_ATTRIBUTE_NAME,
       menuElementRef,
       selectedId: selectedId,
-      setSelectedId: setSelectedId
-    })
+      setSelectedId: setSelectedId,
+    });
 
   const triggerBlur = useCallback(function (): void {
-    setIsMenuVisible(false)
-    setSelectedId(INVALID_ID)
-    getCurrentFromRef(rootElementRef).blur()
-  }, [])
+    setIsMenuVisible(false);
+    setSelectedId(INVALID_ID);
+    getCurrentFromRef(rootElementRef).blur();
+  }, []);
 
   const triggerUpdateMenuElementLayout = useCallback(function (selectedId: Id) {
-    const rootElement = getCurrentFromRef(rootElementRef)
-    const menuElement = getCurrentFromRef(menuElementRef)
-    updateMenuElementLayout(rootElement, menuElement, selectedId)
-  }, [])
+    const rootElement = getCurrentFromRef(rootElementRef);
+    const menuElement = getCurrentFromRef(menuElementRef);
+    updateMenuElementLayout(rootElement, menuElement, selectedId);
+  }, []);
 
   const handleRootFocus = useCallback(
     function (): void {
       if (isMenuVisible === true) {
         // prevents re-selecting selected node when using preact/compat, which makes onFocus even bubble
         // (hence we get here when focusing the menu inputs)
-        return
+        return;
       }
       // Show the menu and update the `selectedId` on focus
-      setIsMenuVisible(true)
+      setIsMenuVisible(true);
       if (value === null) {
-        triggerUpdateMenuElementLayout(selectedId)
-        return
+        triggerUpdateMenuElementLayout(selectedId);
+        return;
       }
-      const index = findOptionIndexByValue(options, value)
+      const index = findOptionIndexByValue(options, value);
       if (index === -1) {
-        throw new Error(`Invalid \`value\`: ${value}`)
+        throw new Error(`Invalid \`value\`: ${value}`);
       }
-      const newSelectedId = `${index}`
-      setSelectedId(newSelectedId)
-      triggerUpdateMenuElementLayout(newSelectedId)
+      const newSelectedId = `${index}`;
+      setSelectedId(newSelectedId);
+      triggerUpdateMenuElementLayout(newSelectedId);
     },
     [options, selectedId, triggerUpdateMenuElementLayout, value, isMenuVisible]
-  )
+  );
 
   const handleRootKeyDown = useCallback(
     function (event: JSX.TargetedKeyboardEvent<HTMLDivElement>): void {
       if (event.key === 'Escape' || event.key === 'Tab') {
-        triggerBlur()
-        return
+        triggerBlur();
+        return;
       }
       if (event.key === 'Enter') {
         if (selectedId !== INVALID_ID) {
@@ -144,72 +144,72 @@ export function Dropdown<
             menuElementRef
           ).querySelector<HTMLInputElement>(
             `[${ITEM_ID_DATA_ATTRIBUTE_NAME}='${selectedId}']`
-          )
+          );
           if (selectedElement === null) {
-            throw new Error('Invariant violation') // `selectedId` is valid
+            throw new Error('Invariant violation'); // `selectedId` is valid
           }
-          selectedElement.checked = true
-          const changeEvent = document.createEvent('Event')
-          changeEvent.initEvent('change', true, true)
-          selectedElement.dispatchEvent(changeEvent)
+          selectedElement.checked = true;
+          const changeEvent = document.createEvent('Event');
+          changeEvent.initEvent('change', true, true);
+          selectedElement.dispatchEvent(changeEvent);
         }
-        triggerBlur()
-        return
+        triggerBlur();
+        return;
       }
-      handleScrollableMenuKeyDown(event)
+      handleScrollableMenuKeyDown(event);
     },
     [handleScrollableMenuKeyDown, selectedId, triggerBlur]
-  )
+  );
 
   const handleRootMouseDown = useCallback(
     function (event: JSX.TargetedMouseEvent<HTMLDivElement>): void {
       // `mousedown` events from `menuElement` are stopped from propagating to `rootElement` by `handleMenuMouseDown`
       if (isMenuVisible === false) {
-        return
+        return;
       }
-      event.preventDefault()
-      triggerBlur()
+      event.preventDefault();
+      triggerBlur();
     },
     [isMenuVisible, triggerBlur]
-  )
+  );
 
   const handleMenuMouseDown = useCallback(function (
     event: JSX.TargetedMouseEvent<HTMLDivElement>
   ): void {
     // Stop the `mousedown` event from propagating to the `rootElement`
-    event.stopPropagation()
+    event.stopPropagation();
   },
-  [])
+  []);
 
   const handleOptionChange = useCallback(
     function (event: JSX.TargetedEvent<HTMLInputElement>): void {
       const id = event.currentTarget.getAttribute(
         ITEM_ID_DATA_ATTRIBUTE_NAME
-      ) as string
+      ) as string;
       const optionValue = options[
         parseInt(id, 10)
-      ] as DropdownOptionValue<Value>
-      const newValue = optionValue.value
-      onValueChange(newValue, name)
-      onChange(event)
-      triggerBlur()
+      ] as DropdownOptionValue<Value>;
+      const newValue = optionValue.value;
+      onValueChange(newValue, name);
+      onChange(event);
+      triggerBlur();
     },
     [name, onChange, onValueChange, options, triggerBlur]
-  )
+  );
 
   const handleMouseDownOutside = useCallback(
     function (): void {
       if (isMenuVisible === false) {
-        return
+        return;
       }
-      triggerBlur()
+      triggerBlur();
     },
     [isMenuVisible, triggerBlur]
-  )
+  );
   useMouseDownOutside({
     onMouseDownOutside: handleMouseDownOutside,
-    ref: rootElementRef
-  })
+    ref: rootElementRef,
+  });
 
   return (
     <div
@@ -223,7 +223,7 @@ export function Dropdown<
           ? dropdownStyles.hasBorder
           : null,
         typeof icon === 'undefined' ? null : dropdownStyles.hasIcon,
-        disabled === true ? dropdownStyles.disabled : null
+        disabled === true ? dropdownStyles.disabled : null,
       ])}
       onFocus={handleRootFocus}
       onKeyDown={disabled === true ? undefined : handleRootKeyDown}
@@ -240,7 +240,7 @@ export function Dropdown<
           <div
             class={createClassName([
               dropdownStyles.value,
-              dropdownStyles.placeholder
+              dropdownStyles.placeholder,
             ])}
           >
             {placeholder}
@@ -263,7 +263,7 @@ export function Dropdown<
           dropdownStyles.menu,
           disabled === true || isMenuVisible === false
             ? menuStyles.hidden
-            : null
+            : null,
         ])}
         onMouseDown={handleMenuMouseDown}
       >
@@ -272,14 +272,14 @@ export function Dropdown<
           index: number
         ): JSX.Element {
           if ('separator' in option) {
-            return <hr key={index} class={menuStyles.optionSeparator} />
+            return <hr key={index} class={menuStyles.optionSeparator} />;
           }
           if ('header' in option) {
             return (
               <h1 key={index} class={menuStyles.optionHeader}>
                 {option.header}
               </h1>
-            )
+            );
           }
           return (
             <label
@@ -291,7 +291,7 @@ export function Dropdown<
                   : null,
                 option.disabled !== true && `${index}` === selectedId
                   ? menuStyles.optionValueSelected
-                  : null
+                  : null,
               ])}
             >
               <input
@@ -318,23 +318,23 @@ export function Dropdown<
               ) : null}
               {typeof option.text === 'undefined' ? option.value : option.text}
             </label>
-          )
+          );
         })}
       </div>
     </div>
-  )
+  );
 }
 
 function getDropdownOptionValue<
   Value extends boolean | number | string = string
 >(option: DropdownOption<Value>): ComponentChildren {
   if ('text' in option) {
-    return option.text
+    return option.text;
   }
   if ('value' in option) {
-    return option.value
+    return option.value;
   }
-  throw new Error('Invariant violation')
+  throw new Error('Invariant violation');
 }
 
 // Returns the index of the option in `options` with the given `value`, else `-1`
@@ -342,16 +342,16 @@ function findOptionIndexByValue<
   Value extends boolean | number | string = string
 >(options: Array<DropdownOption<Value>>, value: null | Value): number {
   if (value === null) {
-    return -1
+    return -1;
   }
-  let index = 0
+  let index = 0;
   for (const option of options) {
     if ('value' in option && option.value === value) {
-      return index
+      return index;
     }
-    index += 1
+    index += 1;
   }
-  return -1
+  return -1;
 }
 
 function updateMenuElementLayout(
@@ -360,30 +360,31 @@ function updateMenuElementLayout(
   selectedId: Id
 ) {
   // Set a maximum width and height
-  const menuElementMaxWidth = window.innerWidth - 2 * VIEWPORT_MARGIN
-  menuElement.style.maxWidth = `${menuElementMaxWidth}px`
-  const menuElementMaxHeight = window.innerHeight - 2 * VIEWPORT_MARGIN
-  menuElement.style.maxHeight = `${menuElementMaxHeight}px`
+  const menuElementMaxWidth = window.innerWidth - 2 * VIEWPORT_MARGIN;
+  menuElement.style.maxWidth = `${menuElementMaxWidth}px`;
+  const menuElementMaxHeight = window.innerHeight - 2 * VIEWPORT_MARGIN;
+  menuElement.style.maxHeight = `${menuElementMaxHeight}px`;
 
-  const rootElementBoundingClientRect = rootElement.getBoundingClientRect()
+  const rootElementBoundingClientRect = rootElement.getBoundingClientRect();
 
   // Nudge `menuElement` left if needed
   const leftOffset =
     menuElement.getBoundingClientRect().left +
     menuElement.offsetWidth -
-    (window.innerWidth - VIEWPORT_MARGIN)
+    (window.innerWidth - VIEWPORT_MARGIN);
   if (leftOffset > 0) {
-    menuElement.style.left = `-${leftOffset}px`
+    menuElement.style.left = `-${leftOffset}px`;
   }
 
   const idealTopOffset = Math.max(
     (menuElement.offsetHeight - rootElement.offsetHeight) / 2,
     0
-  )
-  const minimumTopOffset =
-    rootElementBoundingClientRect.top -
-    (window.innerHeight - menuElement.offsetHeight - VIEWPORT_MARGIN)
-  const maximumTopOffset = rootElementBoundingClientRect.top - VIEWPORT_MARGIN
+  );
+  const minimumTopOffset = Math.min(0, rootElementBoundingClientRect.top);
+  const maximumTopOffset = Math.max(
+    0,
+    rootElementBoundingClientRect.top - VIEWPORT_MARGIN
+  );
 
   // Uncomment to debug
   // console.table([{ maximumTopOffset, minimumTopOffset }])
@@ -397,24 +398,24 @@ function updateMenuElementLayout(
     const topOffset = Math.min(
       Math.max(idealTopOffset, minimumTopOffset),
       maximumTopOffset
-    )
-    menuElement.style.top = `-${topOffset}px`
-    menuElement.scrollTop = 0
-    return
+    );
+    menuElement.style.top = `-${topOffset}px`;
+    menuElement.scrollTop = 0;
+    return;
   }
 
   const selectedInputElement = menuElement.querySelector<HTMLInputElement>(
     `[${ITEM_ID_DATA_ATTRIBUTE_NAME}='${selectedId}']`
-  )
+  );
   if (selectedInputElement === null) {
-    throw new Error('Invariant violation')
+    throw new Error('Invariant violation');
   }
-  const selectedLabelElement = selectedInputElement.parentElement
+  const selectedLabelElement = selectedInputElement.parentElement;
   if (selectedLabelElement === null) {
-    throw new Error('Invariant violation')
+    throw new Error('Invariant violation');
   }
 
-  const isScrollable = menuElement.offsetHeight === menuElementMaxHeight
+  const isScrollable = menuElement.offsetHeight === menuElementMaxHeight;
   if (isScrollable === false) {
     // Uncomment to debug
     // console.log('Dropdown Menu Case 2')
@@ -424,9 +425,9 @@ function updateMenuElementLayout(
     const topOffset = Math.min(
       Math.max(selectedLabelElement.offsetTop, minimumTopOffset),
       maximumTopOffset
-    )
-    menuElement.style.top = `-${topOffset}px`
-    return
+    );
+    menuElement.style.top = `-${topOffset}px`;
+    return;
   }
   // Uncomment to debug
   // console.log('Dropdown Menu Case 3')
@@ -436,13 +437,13 @@ function updateMenuElementLayout(
   const topOffset = Math.min(
     Math.max(idealTopOffset, minimumTopOffset),
     maximumTopOffset
-  )
-  menuElement.style.top = `-${topOffset}px`
+  );
+  menuElement.style.top = `-${topOffset}px`;
 
   // Set the `scrollTop` of `menuElement` such that `selectedElement` is
   // directly above the `rootElement`
-  const minScrollTop = 0
-  const maxScrollTop = menuElement.scrollHeight - menuElement.offsetHeight
+  const minScrollTop = 0;
+  const maxScrollTop = menuElement.scrollHeight - menuElement.offsetHeight;
   const scrollTop = Math.min(
     Math.max(
       selectedLabelElement.offsetTop -
@@ -452,6 +453,6 @@ function updateMenuElementLayout(
       minScrollTop
     ),
     maxScrollTop
-  )
-  menuElement.scrollTop = scrollTop
+  );
+  menuElement.scrollTop = scrollTop;
 }

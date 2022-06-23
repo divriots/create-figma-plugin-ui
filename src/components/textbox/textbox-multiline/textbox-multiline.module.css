@@ -3,6 +3,21 @@
   z-index: var(--z-index-1);
 }
 
+.grow {
+  display: grid;
+}
+
+.ghost,
+.grow .textarea {
+  grid-area: 1 / 1 / 2 / 2;
+}
+
+.ghost {
+  padding: 6px 0 6px var(--space-extra-small);
+  visibility: hidden;
+  white-space: pre-wrap;
+}
+
 .textarea {
   display: block;
   width: 100%;
@@ -38,4 +53,17 @@
   top: -1px;
   bottom: -1px;
   border: 2px solid var(--figma-color-border-brand-strong);
+}
+
+.underline {
+  position: absolute;
+  right: var(--space-extra-small);
+  bottom: 0;
+  left: var(--space-extra-small);
+  height: 1px;
+  background-color: var(--figma-color-border);
+}
+.textboxMultiline:not(.disabled) .textarea:focus ~ .underline,
+.textboxMultiline:not(.disabled):hover .underline {
+  background-color: transparent;
 }

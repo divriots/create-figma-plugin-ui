@@ -12,6 +12,7 @@ import {
 
 export default {
   parameters: {
+    fixedWidth: true,
     order: 2
   },
   title: 'Components/Textbox Autocomplete/Border'
@@ -59,11 +60,11 @@ export const EmptyFocused = function () {
   }
   return (
     <TextboxAutocomplete
-      variant="border"
       {...useInitialFocus()}
       onInput={handleInput}
       options={options}
       value={value}
+      variant="border"
     />
   )
 }
@@ -111,12 +112,12 @@ export const PlaceholderFocused = function () {
   }
   return (
     <TextboxAutocomplete
-      variant="border"
       {...useInitialFocus()}
       onInput={handleInput}
       options={options}
       placeholder="placeholder"
       value={value}
+      variant="border"
     />
   )
 }
@@ -163,11 +164,11 @@ export const Focused = function () {
   }
   return (
     <TextboxAutocomplete
-      variant="border"
       {...useInitialFocus()}
       onInput={handleInput}
       options={options}
       value={value}
+      variant="border"
     />
   )
 }

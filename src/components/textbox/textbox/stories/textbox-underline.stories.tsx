@@ -10,6 +10,7 @@ import { Textbox } from '../textbox'
 
 export default {
   parameters: {
+    fixedWidth: true,
     order: 2
   },
   title: 'Components/Textbox/Underline'
@@ -34,10 +35,10 @@ export const EmptyFocused = function () {
   }
   return (
     <Textbox
-      variant="underline"
       {...useInitialFocus()}
       onInput={handleInput}
       value={value}
+      variant="underline"
     />
   )
 }
@@ -68,11 +69,11 @@ export const PlaceholderFocused = function () {
   }
   return (
     <Textbox
-      variant="underline"
       {...useInitialFocus()}
       onInput={handleInput}
       placeholder="placeholder"
       value={value}
+      variant="underline"
     />
   )
 }
@@ -96,10 +97,10 @@ export const Focused = function () {
   }
   return (
     <Textbox
-      variant="underline"
       {...useInitialFocus()}
       onInput={handleInput}
       value={value}
+      variant="underline"
     />
   )
 }

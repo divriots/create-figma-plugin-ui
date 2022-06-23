@@ -10,6 +10,7 @@ import { TextboxNumeric } from '../textbox-numeric'
 
 export default {
   parameters: {
+    fixedWidth: true,
     order: 2
   },
   title: 'Components/Textbox Numeric/Border'
@@ -34,10 +35,10 @@ export const EmptyFocused = function () {
   }
   return (
     <TextboxNumeric
-      variant="border"
       {...useInitialFocus()}
       onInput={handleInput}
       value={value}
+      variant="border"
     />
   )
 }
@@ -68,11 +69,11 @@ export const PlaceholderFocused = function () {
   }
   return (
     <TextboxNumeric
-      variant="border"
       {...useInitialFocus()}
       onInput={handleInput}
       placeholder="placeholder"
       value={value}
+      variant="border"
     />
   )
 }
@@ -96,10 +97,10 @@ export const Focused = function () {
   }
   return (
     <TextboxNumeric
-      variant="border"
       {...useInitialFocus()}
       onInput={handleInput}
       value={value}
+      variant="border"
     />
   )
 }

@@ -25,23 +25,23 @@ export const Empty = function () {
     { value: 'baz' },
     { separator: true },
     { header: 'Header' },
-    { value: 'qux' },
-    { value: '1' },
-    { value: '2' },
-    { value: '3' },
-    { value: '4' },
-    { value: '5' },
-    { value: '6' },
-    { value: '7' },
-    { value: '8' },
-    { value: '9' },
-    { value: '10' },
-    { value: '11' },
-    { value: '12' },
-    { value: '13' },
-    { value: '14' },
-    { value: '15' }
+    { value: 'qux' }
   ]
+  function handleChange(event: JSX.TargetedEvent<HTMLInputElement>) {
+    const newValue = event.currentTarget.value
+    console.log(newValue)
+    setValue(newValue)
+  }
+  return <Dropdown onChange={handleChange} options={options} value={value} />
+}
+
+export const EmptyManyOptions = function () {
+  const [value, setValue] = useState<null | string>(null)
+  const options: Array<DropdownOption> = [...Array(100).keys()].map(function (
+    index
+  ) {
+    return { value: `${index + 1}` }
+  })
   function handleChange(event: JSX.TargetedEvent<HTMLInputElement>) {
     const newValue = event.currentTarget.value
     console.log(newValue)
@@ -85,6 +85,21 @@ export const Filled = function () {
     { header: 'Header' },
     { value: 'qux' }
   ]
+  function handleChange(event: JSX.TargetedEvent<HTMLInputElement>) {
+    const newValue = event.currentTarget.value
+    console.log(newValue)
+    setValue(newValue)
+  }
+  return <Dropdown onChange={handleChange} options={options} value={value} />
+}
+
+export const FilledManyOptions = function () {
+  const [value, setValue] = useState<string>('42')
+  const options: Array<DropdownOption> = [...Array(100).keys()].map(function (
+    index
+  ) {
+    return { value: `${index + 1}` }
+  })
   function handleChange(event: JSX.TargetedEvent<HTMLInputElement>) {
     const newValue = event.currentTarget.value
     console.log(newValue)

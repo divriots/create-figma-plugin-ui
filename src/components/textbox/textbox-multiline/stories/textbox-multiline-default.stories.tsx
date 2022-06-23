@@ -9,6 +9,7 @@ import { TextboxMultiline } from '../textbox-multiline'
 
 export default {
   parameters: {
+    fixedWidth: true,
     order: 1
   },
   title: 'Components/Textbox Multiline/Default'
@@ -158,7 +159,17 @@ export const Rows = function () {
     console.log(newValue)
     setValue(newValue)
   }
-  return <TextboxMultiline onInput={handleInput} rows={5} value={value} />
+  return <TextboxMultiline onInput={handleInput} rows={1} value={value} />
+}
+
+export const AutoGrow = function () {
+  const [value, setValue] = useState<string>('Text')
+  function handleInput(event: JSX.TargetedEvent<HTMLTextAreaElement>) {
+    const newValue = event.currentTarget.value
+    console.log(newValue)
+    setValue(newValue)
+  }
+  return <TextboxMultiline grow onInput={handleInput} rows={1} value={value} />
 }
 
 export const OnValueInput = function () {

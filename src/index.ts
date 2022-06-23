@@ -42,6 +42,8 @@ export type {
   RadioButtonsProps
 } from './components/radio-buttons/radio-buttons'
 export { RadioButtons } from './components/radio-buttons/radio-buttons'
+export type { RangeSliderProps } from './components/range-slider/range-slider'
+export { RangeSlider } from './components/range-slider/range-slider'
 export type { SearchTextboxProps } from './components/search-textbox/search-textbox'
 export { SearchTextbox } from './components/search-textbox/search-textbox'
 export type {

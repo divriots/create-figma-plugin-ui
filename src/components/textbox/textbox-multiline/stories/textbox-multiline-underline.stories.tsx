@@ -9,6 +9,7 @@ import { TextboxMultiline } from '../textbox-multiline'
 
 export default {
   parameters: {
+    fixedWidth: true,
     order: 3
   },
   title: 'Components/Textbox Multiline/Underline'
@@ -35,10 +36,10 @@ export const EmptyFocused = function () {
   }
   return (
     <TextboxMultiline
-      variant="underline"
       {...useInitialFocus()}
       onInput={handleInput}
       value={value}
+      variant="underline"
     />
   )
 }
@@ -69,11 +70,11 @@ export const PlaceholderFocused = function () {
   }
   return (
     <TextboxMultiline
-      variant="underline"
       {...useInitialFocus()}
       onInput={handleInput}
       placeholder="placeholder"
       value={value}
+      variant="underline"
     />
   )
 }
@@ -99,10 +100,10 @@ export const Focused = function () {
   }
   return (
     <TextboxMultiline
-      variant="underline"
       {...useInitialFocus()}
       onInput={handleInput}
       value={value}
+      variant="underline"
     />
   )
 }
@@ -180,7 +181,25 @@ export const Rows = function () {
   return (
     <TextboxMultiline
       onInput={handleInput}
-      rows={5}
+      rows={1}
+      value={value}
+      variant="underline"
+    />
+  )
+}
+
+export const AutoGrow = function () {
+  const [value, setValue] = useState<string>('Text')
+  function handleInput(event: JSX.TargetedEvent<HTMLTextAreaElement>) {
+    const newValue = event.currentTarget.value
+    console.log(newValue)
+    setValue(newValue)
+  }
+  return (
+    <TextboxMultiline
+      grow
+      onInput={handleInput}
+      rows={1}
       value={value}
       variant="underline"
     />

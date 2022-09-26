@@ -1,11 +1,8 @@
 .link {
   color: var(--figma-color-text-brand);
   pointer-events: all;
-  text-decoration: none;
 }
-.link:hover {
-  text-decoration: underline;
-}
+
 .link:focus {
   background-color: var(--figma-color-bg-selected);
   border-radius: var(--border-radius-2);

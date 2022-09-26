@@ -1,30 +1,31 @@
 /** @jsx h */
-import { h } from 'preact'
+import { h } from 'preact';
 
-import { IconWarning32 } from '../../../icons/icon-32/icon-warning-32'
-import { Banner } from '../banner'
+import { IconWarning32 } from '../../../icons/icon-32/icon-warning-32';
+import { Banner } from '../banner';
 
 export default {
   parameters: {
     fixedWidth: true,
-    order: 2
+    order: 2,
   },
-  title: 'Components/Banner/Warning'
-}
+  title: 'Components/Banner/Warning',
+};
 
 export const ShortText = function () {
   return (
     <Banner icon={<IconWarning32 />} variant="warning">
       Text
     </Banner>
-  )
-}
+  );
+};
 
 export const LongText = function () {
-  const longText = Array(100).fill('Text').join(' ')
+  const longText = Array(100).fill('Text').join(' ');
   return (
     <Banner icon={<IconWarning32 />} variant="warning">
+      Hello <a href="#">World</a>.{longText}
       {longText}
     </Banner>
-  )
-}
+  );
+};
